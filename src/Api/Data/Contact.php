@@ -9,6 +9,7 @@ namespace Eloqua\Api\Data;
 
 use Eloqua\Api\AbstractApi;
 use Eloqua\Api\Assets\Contact\Field;
+use Eloqua\Api\Assets\Contact\Lists;
 use Eloqua\Api\Assets\Contact\SharedList;
 use Eloqua\Api\CreatableInterface;
 use Eloqua\Api\Data\Contact\ContactList;

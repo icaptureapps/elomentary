@@ -22,11 +22,11 @@ class Client
    * @var array
    */
   private $options = array(
-    'base_url' => 'https://secure.p01.eloqua.com/API/REST',
+    'base_url' => 'https://secure.eloqua.com/API/REST',
     'version' => '2.0',
     'user_agent' => 'Elomentary (http://github.com/tableau-mkt/elomentary)',
-    'timeout' => 10,
-    'count' => 100,
+    'timeout' => 120,
+    'count' => 1000,
   );
 
   /**
@@ -59,10 +59,44 @@ class Client
    */
   public function api($name) {
     switch ($name) {
-      case 'campaign':
-      case 'campaigns':
-        $api = new Api\Assets\Campaign($this);
+
+      /* **************************************************
+        ADDED BY Michael Porter 2016-04-05        
+        ********************************************  */
+      case 'contactfield':
+      case 'contactfields':
+        $api = new Api\Assets\Contact\Field($this);
         break;
+
+      case 'contactlists':
+        $api = new Api\Assets\Contact\Lists($this);
+        break;
+
+      case 'form':
+        $api = new Api\Assets\Form($this);
+        break;
+
+      case 'externalAssetTypes':
+        $api = new Api\Assets\ExternalTypes($this);
+        break;
+
+      case 'externalAssets':
+        $api = new Api\Assets\External($this);
+        break;
+
+      case 'campaigns':
+        $api = new Api\Assets\Campaigns($this);
+        break;
+
+      case 'activity':
+        $api = new Api\Data\Activity($this);
+        break;
+
+      case 'formData':
+        $api = new Api\Data\FormData($this);
+        break;
+
+      /* ************************************************** */
 
       case 'contact':
       case 'contacts':
@@ -164,13 +198,25 @@ class Client
       'version'  => '', // @codeCoverageIgnore
     ));
 
-    $authHeader = array (
-      'Authorization' => sprintf('Basic %s', base64_encode("$site\\$login:$password")),
-    );
-
+    
+    // ///////////////////////////////////////////////////////////////////////////////////     
+    // CHECK ADDED BY MICHAEL PORTER TO ALLOW USE OF THIS LIB WITH 'access_token' (from OAuth)
+    // INSTEAD OF 'site' 'login' and 'password'
+    if( $login == 'access_token' &&  $password == 'access_token' ){
+      $authHeader = array (
+        'Authorization' => sprintf('Bearer %s', $site ),
+      );
+    } else {
+      $authHeader = array (
+        'Authorization' => sprintf('Basic %s', base64_encode("$site\\$login:$password")),
+      );
+    } 
+    // /////////////////////////////////////////////////////////////////////////////////// 
     $response = $client->get('https://login.eloqua.com/id', array(), $authHeader);
 
+    //echo $response->getBody();
     $loginObj = $response->json();
+    //vprint($loginObj,'$loginObj');
     $urls     = $loginObj['urls']['apis']['rest'];
 
     $stripVersion = function($url) {

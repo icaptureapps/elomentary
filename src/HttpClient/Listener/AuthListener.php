@@ -27,11 +27,25 @@ class AuthListener {
       throw new RuntimeException('You must specify authentication details.');
     }
 
-    $credentials = $this->site . '\\' . $this->login . ':' . $this->password;
-    $event['request']->setHeader(
-      'Authorization',
-      sprintf('Basic %s', base64_encode($credentials))
-    );
+    // ///////////////////////////////////////////////////////////////////////////////////     
+    // CHECK ADDED BY MICHAEL PORTER TO ALLOW USE OF THIS LIB WITH 'access_token' (from OAuth)
+    // INSTEAD OF 'site' 'login' and 'password'
+    if( $this->login == 'access_token' &&  $this->password == 'access_token' ){
+      $credentials = $this->site;
+      $event['request']->setHeader(
+        'Authorization',
+        sprintf('Bearer %s', $this->site)
+      );
+    } else {
+      $credentials = $this->site . '\\' . $this->login . ':' . $this->password;
+      $event['request']->setHeader(
+        'Authorization',
+        sprintf('Basic %s', base64_encode($credentials))
+      );
+    }
+    // ///////////////////////////////////////////////////////////////////////////////////   
+
+      
   }
 
 }
