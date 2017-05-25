@@ -32,5 +32,5 @@
   "autoload": {
     "psr-4": {"Eloqua\\": "src/"}
   },
-  "minimum-stability": "dev-0.4.0"
+  "minimum-stability": "dev-master"
 }
